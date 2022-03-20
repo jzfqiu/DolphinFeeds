@@ -7,6 +7,6 @@ if __name__ == "__main__":
         for d in SOURCES:
             f = Feed(d["url"], d["source"], d["tags"])
             f.update()
-        print("Update complete")
+        print("[Server] Update complete", flush=True)
         sleep(SLEEP_TIME)
         

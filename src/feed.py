@@ -42,12 +42,16 @@ class Feed:
                 pass
             
             else:
-                article.getTags()
-                article.getSummary()
+                # TODO: filter tags
+                # article.getTags()
+
+                # TODO: use inline keyboard to generate summary
+                # article.getSummary()
+
                 # send update to telegram
-                # telegramBot.sendArticle(TELEGRAM_FEED_CHANNEL_ID, article)
+                telegramBot.sendArticle(TELEGRAM_FEED_CHANNEL_ID, article)
                 # send update to database 
-                # db.insert("Articles", [article.__dict__])
+                db.insert("Articles", [article.__dict__])
         db.close()
 
 

@@ -1,5 +1,6 @@
 from hashlib import md5
-from config import TEXTRAZOR_TOKEN
+import requests
+from config import TEXTRAZOR_TOKEN, MEANINGCLOUD_TOKEN, SMMRY_TOKEN
 import textrazor
 
 def hash_md5(s):
@@ -26,13 +27,29 @@ class Article:
             self.id = hash_md5(data["title"])
     
     def getTags(self):
-        # textrazor.api_key = TEXTRAZOR_TOKEN
-        # client = textrazor.TextRazor(extractors=["entities", "topics"])
-        # response = client.analyze_url("http://www.bbc.co.uk/news/uk-politics-18640916")
-        # for entity in response.entities():
-        #     print(entity.id, entity.relevance_score, entity.confidence_score, entity.freebase_types)
-        pass
+        textrazor.api_key = TEXTRAZOR_TOKEN
+        client = textrazor.TextRazor(extractors=["topics"])
+        response = client.analyze_url(self.url)
+        print(self.url)
+        for topic in response.topics():
+            if topic.score > 0.7:
+                print(topic.label, topic.score)
+            # self.tags.append(topic.label)
+            
 
     def getSummary(self):
-        pass
+        # A limit of 100 free API requests can be made daily, 
+        # and each request must be at least 10 seconds apart.
+        url = "https://api.smmry.com"
+        params = {
+            "SM_API_KEY": SMMRY_TOKEN,
+            "SM_URL": self.url,
+        }
+        r = requests.post(url, params=params)
+        response = r.json()
+        self.summary = response['sm_api_content']
+
+
+        
+
     

@@ -1,6 +1,6 @@
 from hashlib import md5
 import requests
-from config import TEXTRAZOR_TOKEN, MEANINGCLOUD_TOKEN, SMMRY_TOKEN
+from config import TEXTRAZOR_TOKEN, SMMRY_TOKEN
 import textrazor
 
 def hash_md5(s):

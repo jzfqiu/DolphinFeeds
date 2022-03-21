@@ -19,9 +19,8 @@ class TelegramAPI:
         return self.api("sendMessage", params)
 
     def sendArticle(self, chat_id, article):
-        tags = " ".join(["\#" + tag for tag in article.tags])
-        link = "[{}]({})".format(article.title, article.url)
-        text = "{}: {}\n\n{}".format(article.source, link, tags)
+        # tags = " ".join(["\#" + tag for tag in article.tags])
+        text = "\#{}: {}\n{}".format(article.source, article.title, article.url)
         params = {
             "chat_id": chat_id,
             "text": text,

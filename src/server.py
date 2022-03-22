@@ -6,7 +6,7 @@ if __name__ == "__main__":
     while True:
         for d in SOURCES:
             f = Feed(d["url"], d["source"], d["tags"])
-            f.update()
-        print("[Server] Update complete", flush=True)
+            updated = f.update()
+        print("[Server] Update complete, {} articles updated.".format(updated))
         sleep(SLEEP_TIME)
         

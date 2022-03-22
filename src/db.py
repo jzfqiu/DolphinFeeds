@@ -17,24 +17,30 @@ class Database:
 
     def insert(self, table, data: List[Dict]):
         while data:
-            insert = []
+            row = data.pop(0)
+            insert = list(row.keys())
+            filler = ["%s" for _ in range(len(row))]
             values = []
-            row = list(data.pop(0).items())
-            # TODO: rewrite type conversion to for more flexibility
-            while row:
-                col, val = row.pop(0)
-                insert.append(col)
-                if isinstance(val, str):
-                    values.append("'{}'".format(val))
-                elif isinstance(val, datetime):
-                    values.append("'{}'".format(val.strftime("%Y-%m-%d %H:%M:%S")))
-                elif isinstance(val, list):
-                    values.append("'{}'".format(" ".join(val)))
+            for value in row.values():
+                if isinstance(value, list):
+                    values.append(",".join(value))
                 else:
-                    values.append("{}".format(val))
+                    values.append(value)
+            # TODO: rewrite type conversion to for more flexibility
+            # while row:
+            #     col, val = row.pop(0)
+            #     insert.append(col)
+            #     if isinstance(val, str):
+            #         values.append("'{}'".format(val))
+            #     elif isinstance(val, datetime):
+            #         values.append("'{}'".format(val.strftime("%Y-%m-%d %H:%M:%S")))
+            #     elif isinstance(val, list):
+            #         values.append("'{}'".format(" ".join(val)))
+            #     else:
+            #         values.append("{}".format(val))
             query = "INSERT INTO {} ({}) VALUES ({});".format(
-                table, ', '.join(insert), ", ".join(values))    
-            self.cursor.execute(query)
+                table, ', '.join(insert), ", ".join(filler))    
+            self.cursor.execute(query, values)
         self.cnx.commit()
         res = self.cursor.fetchall()
         return res

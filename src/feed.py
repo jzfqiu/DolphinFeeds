@@ -28,11 +28,17 @@ class Feed:
 
         # parse feed 
         parser = Parser(self.source, self.tags)
-        articles_data = parser.parse(r.text)
+        try:
+            articles_data = parser.parse(r.text)
+        except:
+            print(r.text)
+            raise
 
         # initiaize services
         db = Database()
         telegramBot = TelegramAPI(TELEGRAM_BOT_TOKEN)
+        
+        updated = 0
 
         for article_data in articles_data:
             article = Article(article_data)
@@ -52,7 +58,9 @@ class Feed:
                 telegramBot.sendArticle(TELEGRAM_FEED_CHANNEL_ID, article)
                 # send update to database 
                 db.insert("Articles", [article.__dict__])
+                
+                updated += 1
+        
         db.close()
+        return updated
 
-
-    

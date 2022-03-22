@@ -1,4 +1,5 @@
 import requests
+import re
 
 class TelegramAPI:
     def __init__(self, token) -> None:
@@ -20,10 +21,11 @@ class TelegramAPI:
 
     def sendArticle(self, chat_id, article):
         # tags = " ".join(["\#" + tag for tag in article.tags])
-        text = "\#{}: {}\n{}".format(article.source, article.title, article.url)
+        text = "{}: {}\n{}".format(article.source, article.title, article.url)
+        escaped_text = re.sub(r"([_*\[\]()~`>\#\+\-=|\.!])", r"\\\1", text)
         params = {
             "chat_id": chat_id,
-            "text": text,
+            "text": escaped_text,
             "parse_mode": "MarkdownV2"
         }
         return self.api("sendMessage", params)

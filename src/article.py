@@ -24,7 +24,7 @@ class Article:
         
         if not self.id:
             # need to create id
-            self.id = hash_md5(data["title"])
+            self.id = hash_md5(data["url"])
     
     def getTags(self):
         textrazor.api_key = TEXTRAZOR_TOKEN

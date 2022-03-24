@@ -25,8 +25,8 @@ class Parser:
         return ret
 
     def parse_title(self, item):
-        dom = item.title.contents[0]
-        return dom.strip()
+        dom = item.title
+        return self.strip_cdata(dom.contents[0])
     
     def parse_url(self, item):
         # <link/>url.com\n
@@ -45,15 +45,19 @@ class Parser:
             "EST": "-0500",
             "EDT": "-0400",
         }
-        dom = item.pubdate.contents[0]
-        if dom[-1].isalpha():
+        dom = item.pubdate
+        if not dom:
+            # no pubdate attribute
+            return datetime.now()
+        content = dom.contents[0]
+        if content[-1].isalpha():
             # timezone is spelled out in letters (e.g. UTC instead of +0000)
             # US timezone conversion: https://www.timetemperature.com/abbreviations/united_states_time_zone_abbreviations.shtml 
-            tokens = dom.split()
+            tokens = content.split()
             timezone = tokens.pop(-1)
             tokens.append(timezone_table[timezone])
-            dom = " ".join(tokens)
-        return datetime.strptime(dom, "%a, %d %b %Y %H:%M:%S %z")
+            content = " ".join(tokens)
+        return datetime.strptime(content, "%a, %d %b %Y %H:%M:%S %z")
 
 
     def parse_author(self, item):
@@ -61,11 +65,15 @@ class Parser:
         if not dom:
             # <author>noreply@blogger.com (Ravie Lakshmanan)</author>
             dom = item.find('author')
+            if not dom: 
+                return ""
             tokens = re.split('[\(\)]', dom.contents[0])
             return tokens[1]
-        tokens = re.split('[\[\]]', dom.contents[0])
-        if len(tokens) > 2:
-            return tokens[2]
+        return self.strip_cdata(dom.contents[0])
+
+    def strip_cdata(self, data):
+        if "CDATA" in data:
+            return re.split('[\[\]]', data)[2]
         else:
-            return dom.contents[0]
+            return data
 

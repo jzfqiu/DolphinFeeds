@@ -26,7 +26,7 @@ class Parser:
 
     def parse_title(self, item):
         dom = item.title
-        return self.strip_cdata(dom.contents[0])
+        return self.strip_cdata(dom.contents[0].strip())
     
     def parse_url(self, item):
         # <link/>url.com\n

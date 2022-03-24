@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# update repo
+git pull
+
 # Stop currently running container
 docker stop $(docker ps -f ancestor=dolphinfeeds -q)
 

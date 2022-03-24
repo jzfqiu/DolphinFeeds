@@ -34,8 +34,8 @@ class Feed:
             print(r.text)
             raise
 
-        # initiaize services
-        db = Database(RDS_ENDPOINT, RDS_USER, RDS_PASSWORD, RDS_DATABASE)
+        # initialize services
+        db = Database(RDS_ENDPOINT, RDS_USER, RDS_PWD, RDS_DATABASE)
         telegramBot = TelegramAPI(TELEGRAM_BOT_TOKEN)
         
         updated = 0

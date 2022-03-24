@@ -34,14 +34,17 @@ class Database:
 
 
     def filter(self, table: str, data: Dict):
-        # SELECT * FROM table WHERE k1 = %s AND k2 = %s ...
         query = "SELECT * FROM {} WHERE ".format(table)
         criteria = list(data.items())
+        values = []
         while criteria:
             col, val = criteria.pop(0)
-            query.append()
+            query += "{} = %s ".format(col)
+            values.append(val)
+            if criteria:
+                query += "AND "
         query += ";"
-        self.cursor.execute(query)
+        self.cursor.execute(query, values)
         res = self.cursor.fetchall()
         return res
 

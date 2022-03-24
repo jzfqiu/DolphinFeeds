@@ -1,16 +1,15 @@
-from datetime import datetime
 from typing import List, Dict
 from mysql import connector
 from config import *
 
 class Database:
 
-    def __init__(self):
+    def __init__(self, host, user, password, database):
         self.cnx = connector.connect(
-            host=RDS_ENDPOINT,
-            user=RDS_USER,
-            password=RDS_PWD,
-            database=RDS_DATABASE
+            host=host,
+            user=user,
+            password=password,
+            database=database
         )
         self.cursor = self.cnx.cursor()
 
@@ -26,18 +25,6 @@ class Database:
                     values.append(",".join(value))
                 else:
                     values.append(value)
-            # TODO: rewrite type conversion to for more flexibility
-            # while row:
-            #     col, val = row.pop(0)
-            #     insert.append(col)
-            #     if isinstance(val, str):
-            #         values.append("'{}'".format(val))
-            #     elif isinstance(val, datetime):
-            #         values.append("'{}'".format(val.strftime("%Y-%m-%d %H:%M:%S")))
-            #     elif isinstance(val, list):
-            #         values.append("'{}'".format(" ".join(val)))
-            #     else:
-            #         values.append("{}".format(val))
             query = "INSERT INTO {} ({}) VALUES ({});".format(
                 table, ', '.join(insert), ", ".join(filler))    
             self.cursor.execute(query, values)
@@ -46,19 +33,13 @@ class Database:
         return res
 
 
-    def filter(self, table, data):
+    def filter(self, table: str, data: Dict):
+        # SELECT * FROM table WHERE k1 = %s AND k2 = %s ...
         query = "SELECT * FROM {} WHERE ".format(table)
         criteria = list(data.items())
         while criteria:
             col, val = criteria.pop(0)
-            if isinstance(val, str):
-                query += "{} = '{}'".format(col, val)
-            elif isinstance(val, datetime):
-                query += "{} = '{}'".format(col, val.strftime("%Y-%m-%d %H:%M:%S"))
-            else:
-                query += "{} = {}".format(col, val)
-            if criteria:
-                query += " AND "
+            query.append()
         query += ";"
         self.cursor.execute(query)
         res = self.cursor.fetchall()

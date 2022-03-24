@@ -3,7 +3,7 @@ import requests
 from parser import Parser
 from db import Database
 from article import Article
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_FEED_CHANNEL_ID
+from config import *
 from api import TelegramAPI
 
 
@@ -35,7 +35,7 @@ class Feed:
             raise
 
         # initiaize services
-        db = Database()
+        db = Database(RDS_ENDPOINT, RDS_USER, RDS_PASSWORD, RDS_DATABASE)
         telegramBot = TelegramAPI(TELEGRAM_BOT_TOKEN)
         
         updated = 0
@@ -56,6 +56,7 @@ class Feed:
 
                 # send update to telegram
                 telegramBot.sendArticle(TELEGRAM_FEED_CHANNEL_ID, article)
+                
                 # send update to database 
                 db.insert("Articles", [article.__dict__])
                 

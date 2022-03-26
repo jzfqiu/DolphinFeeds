@@ -1,6 +1,6 @@
 # DolphinFeeds
 
-Smart RSS Feed delivered into Telegram channel.
+Smart RSS Feed integrated with Telegram API.
 
 ## Deploy
 

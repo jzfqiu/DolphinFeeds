@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run Server",
+            "name": "Run main.py",
             "type": "python",
             "request": "launch",
             "cwd": "${workspaceFolder}/src",
-            "program": "server.py",
+            "program": "main.py",
             "console": "internalConsole",
             "justMyCode": true
         }

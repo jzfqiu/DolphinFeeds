@@ -1,3 +1,4 @@
+import logging
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
@@ -12,21 +13,33 @@ class Parser:
         ret = []
         soup = BeautifulSoup(text, 'lxml')
         channel = soup.channel
-        items = channel.find_all("item")
+        try:
+            items = channel.find_all("item")
+        except AttributeError as e:
+            logging.error("No item found in soup")
+            return []
         for item in items:
             article = {}
-            article["title"] = self.parse_title(item)
-            article["url"] = self.parse_url(item)
-            article["pub_date"] = self.parse_pubdate(item)
-            article["author"] = self.parse_author(item)
-            article["source"] = self.source
-            article["tags"] = article.get("tags", []) + self.tags
-            ret.append(article)
+            try:
+                article["title"] = self.parse_title(item)
+                article["url"] = self.parse_url(item)
+                article["pub_date"] = self.parse_pubdate(item)
+                article["author"] = self.parse_author(item)
+                article["source"] = self.source
+                article["tags"] = article.get("tags", []) + self.tags
+                ret.append(article)
+            except:
+                logging.error(item)
+                raise
         return ret
 
     def parse_title(self, item):
         dom = item.title
-        return self.strip_cdata(dom.contents[0].strip())
+        if dom.contents:
+            return self.strip_cdata(dom.contents[0].strip())
+        else:
+            logging.error("No title information in " + str(item))
+            raise Exception
     
     def parse_url(self, item):
         # <link/>url.com\n
@@ -69,7 +82,11 @@ class Parser:
                 return ""
             tokens = re.split('[\(\)]', dom.contents[0])
             return tokens[1]
-        return self.strip_cdata(dom.contents[0])
+        if dom.contents:
+            return self.strip_cdata(dom.contents[0])
+        else:
+            logging.error("No author information")
+            return "Unknown"
 
     def strip_cdata(self, data):
         if "CDATA" in data:

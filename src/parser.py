@@ -12,12 +12,12 @@ class Parser:
     def parse(self, text):
         ret = []
         soup = BeautifulSoup(text, 'lxml')
-        channel = soup.channel
-        try:
-            items = channel.find_all("item")
-        except AttributeError as e:
-            logging.error("No item found in soup")
-            return []
+        if soup.find("channel"):
+            feed = soup.channel
+            items = feed.find_all("item")
+        elif soup.find("feed"):
+            feed = soup.feed
+            items = feed.find_all("entry")
         for item in items:
             article = {}
             try:
@@ -80,8 +80,9 @@ class Parser:
             dom = item.find('author')
             if not dom: 
                 return ""
-            tokens = re.split('[\(\)]', dom.contents[0])
-            return tokens[1]
+            # tokens = re.split('[\(\)]', dom.contents[0])
+            ret = dom.text.strip()
+            return ret
         if dom.contents:
             return self.strip_cdata(dom.contents[0])
         else:

@@ -28,8 +28,9 @@ def hash_md5(s):
 
 def update_db(url: str, source: str, tags: List[str], db):
     logging.info(f"Updating {source}...")
-    # pull the latest feed,     
-    r = requests.get(url)
+    # pull the latest feed
+    headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"}   
+    r = requests.get(url, headers=headers)
 
     # parse feed 
     parser = Parser(source, tags)

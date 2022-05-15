@@ -44,8 +44,11 @@ class Parser:
     def parse_url(self, item):
         # <link/>url.com\n
         # <link/>url.com<author>
-        tokens = re.split("[\n<]", str(item).split("<link/>")[-1])
-        return tokens[0]
+        url = re.split("[\n<]", str(item).split("<link/>")[-1])[0]
+        if not url:
+            # RAND specifics
+            return item.id.text
+        return url
         
     def parse_pubdate(self, item):
         timezone_table = {
@@ -58,19 +61,29 @@ class Parser:
             "EST": "-0500",
             "EDT": "-0400",
         }
-        dom = item.pubdate
-        if not dom:
+        if item.pubdate:
+            dom = item.pubdate
+            content = dom.contents[0]
+            if content[-1].isalpha():
+                # timezone is spelled out in letters (e.g. UTC instead of +0000)
+                # US timezone conversion: https://www.timetemperature.com/abbreviations/united_states_time_zone_abbreviations.shtml 
+                tokens = content.split()
+                timezone = tokens.pop(-1)
+                tokens.append(timezone_table[timezone])
+                content = " ".join(tokens)
+            return datetime.strptime(content, "%a, %d %b %Y %H:%M:%S %z")
+        elif item.published:
+            # 2022-04-29T08:00:00Z
+            dom = item.published
+            return datetime.fromisoformat(dom.text[:-1])
+        elif item.find("dc:date"):
+            # <dc:date>2022-05-12T10:00:00+00:00</dc:date>
+            dom = item.find("dc:date")
+            return datetime.fromisoformat(dom.text)
+        else:
             # no pubdate attribute
             return datetime.now()
-        content = dom.contents[0]
-        if content[-1].isalpha():
-            # timezone is spelled out in letters (e.g. UTC instead of +0000)
-            # US timezone conversion: https://www.timetemperature.com/abbreviations/united_states_time_zone_abbreviations.shtml 
-            tokens = content.split()
-            timezone = tokens.pop(-1)
-            tokens.append(timezone_table[timezone])
-            content = " ".join(tokens)
-        return datetime.strptime(content, "%a, %d %b %Y %H:%M:%S %z")
+
 
 
     def parse_author(self, item):

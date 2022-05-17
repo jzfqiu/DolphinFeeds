@@ -76,8 +76,8 @@ if __name__ == "__main__":
             db.update_by_id("Articles", article["id"], {"sent": 1})
         i = 0
         while i < len(articles):
-            res = telegramBot.sendBatch(TELEGRAM_FEED_CHANNEL_ID, articles[i:i+BATCH_SIZE])
-            i += BATCH_SIZE
+            res = telegramBot.sendBatch(TELEGRAM_FEED_CHANNEL_ID, articles[i:i+BATCH_SIZE+5])
+            i += BATCH_SIZE+5
     
     db.close()
         

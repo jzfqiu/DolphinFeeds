@@ -30,7 +30,7 @@ class Parser:
                 ret.append(article)
             except:
                 logging.error(item)
-                raise
+                # raise
         return ret
 
     def parse_title(self, item):
@@ -39,7 +39,7 @@ class Parser:
             return self.strip_cdata(dom.contents[0].strip())
         else:
             logging.error("No title information in " + str(item))
-            raise Exception
+            # raise Exception
     
     def parse_url(self, item):
         # <link/>url.com\n

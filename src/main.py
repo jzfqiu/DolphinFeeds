@@ -1,3 +1,5 @@
+import datetime
+
 import feedparser
 from db import Database
 from config import *
@@ -32,11 +34,10 @@ def update_db(url: str, tags, source, db: Database):
             "id": hash_md5(entry.link),
             "title": entry.title,
             "url": entry.link,
-            "pub_date": entry.published_parsed,
+            "pub_date": entry.get("published_parsed", datetime.datetime.now()),
             "tags": tags,
             "source": source,
         }
-        # entry['id'] =
         # compare feed with existing in db
         if len(db.filter("Articles", {"id": article['id']})) > 0:
             pass
